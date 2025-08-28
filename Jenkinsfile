@@ -1,9 +1,6 @@
 pipeline{
   agent any
-  environment{
-    DOCKER_HUB_CREDENTIALS = credentials('abdalrhman308')  
-    DOCKER_IMAGE = "abdalrhman308/flask-docker-app"
-  }
+  
   stages{
   stage('Build'){
     steps{
@@ -21,8 +18,13 @@ pipeline{
   }
   stage('Deploy'){
     steps{
-    sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-    sh 'docker push $DOCKER_IMAGE'
+   withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+               sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag ${IMAGE_NAME} $DOCKER_USER/${IMAGE_NAME}
+                        docker push $DOCKER_USER/${IMAGE_NAME}
+                  '''
+                }
     }
   }
 
