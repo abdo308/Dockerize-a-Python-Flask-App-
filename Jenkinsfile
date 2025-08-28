@@ -4,7 +4,7 @@ pipeline{
   stages{
   stage('Build'){
     steps{
-      sh 'docker build -t flask-docker-app .'
+      sh 'docker build -t flask-docker-app:latest .'
     }
   
   }
@@ -22,7 +22,7 @@ pipeline{
                sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker tag ${IMAGE_NAME} $DOCKER_USER/flask-docker-app
-                        docker push $DOCKER_USER/flask-docker-app
+                        docker push $DOCKER_USER/flask-docker-app:latest
                   '''
                 }
     }
