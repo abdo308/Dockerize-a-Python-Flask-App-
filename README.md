@@ -107,10 +107,12 @@ The `Jenkinsfile` defines three stages:
 
 ## 🧪 Running Tests
 
-To run the tests locally:
+To run the test and see if the app is listening at port 5000:
 
 ``` bash
-pytest tests/
+    sh 'docker run -d -p 5000:5000 --name test flask-docker'
+    sh 'sleep 5'
+    sh 'curl -f http://localhost:5000 || (echo "App test failed" && exit 1)'
 ```
 
 ------------------------------------------------------------------------
