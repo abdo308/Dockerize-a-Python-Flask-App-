@@ -66,9 +66,10 @@ The `Jenkinsfile` defines three stages:
 
     ``` groovy
     stage('Test') {
-        steps {
-            sh 'pytest tests/'
-        }
+         steps {
+            sh 'docker run -d -p 5000:5000 --name test flask-docker'
+            sh 'sleep 5'
+            sh 'curl -f http://localhost:5000 || (echo "App test failed" && exit 1)'        }
     }
     ```
 
@@ -102,18 +103,6 @@ The `Jenkinsfile` defines three stages:
     -   Build the image
     -   Run the tests
     -   Deploy to Docker Hub
-
-------------------------------------------------------------------------
-
-## 🧪 Running Tests
-
-To run the test and see if the app is listening at port 5000:
-
-``` bash
-    sh 'docker run -d -p 5000:5000 --name test flask-docker'
-    sh 'sleep 5'
-    sh 'curl -f http://localhost:5000 || (echo "App test failed" && exit 1)'
-```
 
 ------------------------------------------------------------------------
 
