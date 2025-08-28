@@ -1,87 +1,128 @@
-# Dockerize a Python Flask App
+# Flask App Dockerized with CI/CD
 
-This project demonstrates how to containerize a simple **Python Flask application** using **Docker**. The goal is to make the app portable, consistent across environments, and easy to deploy.
+This repository demonstrates how to **Dockerize a Flask application**
+and automate the process of **building, testing, and deploying** it to
+**Docker Hub** using **Jenkins CI/CD pipelines**.
 
----
+------------------------------------------------------------------------
 
 ## 🚀 Features
-- Simple **Flask web application**
-- **Dockerized** for consistent environment setup
-- Easy to build, run, and deploy
 
----
+-   Flask app containerized using **Docker**
+-   CI/CD pipeline configured via **Jenkins**
+-   Automated **Build**, **Test**, and **Deploy** stages
+-   Pushes the final Docker image to **Docker Hub**
+
+------------------------------------------------------------------------
 
 ## 📂 Project Structure
-```
-Dockerize-a-Python-Flask-App/
-├── app.py                # Flask application
-├── requirements.txt      # Python dependencies
-├── Dockerfile            # Instructions to build the Docker image
-├── .dockerignore         # Files and folders to ignore during build
-└── README.md             # Project documentation
-```
 
----
+    ├── app.py               # Main Flask application
+    ├── requirements.txt     # Dependencies for the app
+    ├── Dockerfile           # Docker configuration
+    ├── Jenkinsfile          # Jenkins pipeline configuration
+    ├── tests/               # Unit tests for the app
+    └── README.md            # Project documentation
 
-## 🛠️ Prerequisites
-Before running the project, ensure you have the following installed:
+------------------------------------------------------------------------
 
-- [Python 3.8+](https://www.python.org/downloads/)
-- [Docker](https://www.docker.com/)
+## 🐳 Docker Setup
 
----
+### Build the Docker image
 
-## 📌 Installation & Usage
-
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/abdo308/Dockerize-a-Python-Flask-App.git
-cd Dockerize-a-Python-Flask-App
-```
-
-### 2️⃣ Install Dependencies (Optional if running locally)
-```bash
-pip install -r requirements.txt
-```
-
-### 3️⃣ Build the Docker Image
-```bash
+``` bash
 docker build -t flask-docker-app .
 ```
 
-### 4️⃣ Run the Docker Container
-```bash
+### Run the container
+
+``` bash
 docker run -d -p 5000:5000 flask-docker-app
 ```
 
-### 5️⃣ Access the App
-Open your browser and go to:
+### Verify
+
+Visit: <http://localhost:5000>
+
+------------------------------------------------------------------------
+
+## 🔧 Jenkins CI/CD Pipeline
+
+The `Jenkinsfile` defines three stages:
+
+1.  **Build**\
+    Builds the Docker image.
+
+    ``` groovy
+    stage('Build') {
+        steps {
+            sh 'docker build -t flask-docker-app .'
+        }
+    }
+    ```
+
+2.  **Test**\
+    Runs unit tests to ensure code quality.
+
+    ``` groovy
+    stage('Test') {
+        steps {
+            sh 'pytest tests/'
+        }
+    }
+    ```
+
+3.  **Deploy**\
+    Pushes the Docker image to **Docker Hub**.
+
+    ``` groovy
+    stage('Deploy') {
+        steps {
+            withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker tag ${IMAGE_NAME} $DOCKER_USER/flask-docker-app
+                    docker push $DOCKER_USER/flask-docker-app:latest
+                '''
+            }
+        }
+    }
+    ```
+
+------------------------------------------------------------------------
+
+## 🔑 Jenkins Setup
+
+1.  Install the following plugins:
+    -   **Docker Pipeline**
+    -   **Credentials Binding**
+2.  Create Docker Hub credentials in Jenkins (`docker-hub`).
+3.  Configure Jenkins to use your `Jenkinsfile` from this repository.
+4.  Run the pipeline --- Jenkins will:
+    -   Build the image
+    -   Run the tests
+    -   Deploy to Docker Hub
+
+------------------------------------------------------------------------
+
+## 🧪 Running Tests
+
+To run the tests locally:
+
+``` bash
+pytest tests/
 ```
-http://localhost:5000
-```
 
----
+------------------------------------------------------------------------
 
-## 🐳 Docker Commands Cheat Sheet
+## 📦 Docker Hub
 
-| Command                           | Description                            |
-| -------------------------------- | ------------------------------------- |
-| `docker build -t <image>`        | Build an image                        |
-| `docker images`                 | List all images                      |
-| `docker run -p 5000:5000 <img>` | Run container on port 5000           |
-| `docker ps`                     | List running containers             |
-| `docker stop <id>`              | Stop container                      |
-| `docker rm <id>`                | Remove container                    |
-| `docker rmi <image>`            | Remove image                        |
+Once deployed, your image will be available on Docker Hub:
 
----
+    docker pull <DOCKER_USER>/flask-docker-app:latest
+
+------------------------------------------------------------------------
 
 ## 📜 License
-This project is licensed under the **MIT License** — feel free to use and modify it.
 
----
-
-## 👤 Author
-**Abdelrahman Mahdy**  
-- GitHub: [abdo308](https://github.com/abdo308)
-- LinkedIn: [Your LinkedIn Profile]()
+This project is licensed under the **MIT License**.
