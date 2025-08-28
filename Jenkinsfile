@@ -20,9 +20,10 @@ pipeline{
     }
   }
   stage('Deploy'){
-    sh 'docker push abdalrhman308/flask-docker-app'
+    steps{
     sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
     sh 'docker push $DOCKER_IMAGE'
+    }
   }
 
 }
