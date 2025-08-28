@@ -10,7 +10,7 @@ pipeline{
   }
   stage('Test'){
     steps{
-    sh 'docker container prune -f'
+    sh 'docker kill $(docker ps -q)'
     sh 'docker run -d -p 5000:5000 --name test flask-docker-app'
     sh 'sleep 5'
     sh 'curl -f http://localhost:5000 || (echo "App test failed" && exit 1)'
