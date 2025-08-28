@@ -20,8 +20,8 @@ pipeline{
    withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker tag ${IMAGE_NAME} $DOCKER_USER/${IMAGE_NAME}
-                        docker push $DOCKER_USER/${IMAGE_NAME}
+                        docker tag ${IMAGE_NAME} $DOCKER_USER/flask-docker-app
+                        docker push $DOCKER_USER/flask-docker-app
                   '''
                 }
     }
