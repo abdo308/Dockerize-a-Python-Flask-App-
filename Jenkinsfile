@@ -4,7 +4,7 @@ pipeline{
   stages{
   stage('Build'){
     steps{
-      sh 'docker build -t flask-docker-app:latest .'
+      sh 'docker build -t flask-docker:latest .'
     }
   
   }
@@ -12,7 +12,7 @@ pipeline{
     steps{
     sh 'docker ps -a --filter "name=test" -q | xargs -r docker stop'
     sh 'docker ps -a --filter "name=test" -q | xargs -r docker rm || true'
-    sh 'docker run -d -p 5000:5000 --name test flask-docker-app'
+    sh 'docker run -d -p 5000:5000 --name test flask-docker'
     sh 'sleep 5'
     sh 'curl -f http://localhost:5000 || (echo "App test failed" && exit 1)'
     }
@@ -22,8 +22,8 @@ pipeline{
    withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker tag ${IMAGE_NAME} $DOCKER_USER/flask-docker-app
-                        docker push $DOCKER_USER/flask-docker-app:latest
+                        docker tag flask-docker:latest $DOCKER_USER/flask-docker
+                        docker push $DOCKER_USER/flask-docker:latest
                   '''
                 }
     }
