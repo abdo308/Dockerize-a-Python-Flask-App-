@@ -10,6 +10,7 @@ pipeline{
   }
   stage('Test'){
     steps{
+    sh 'docker ps -a --filter "name=test" -q | xargs -r docker stop'
     sh 'docker ps -a --filter "name=test" -q | xargs -r docker rm || true'
     sh 'docker run -d -p 5000:5000 --name test flask-docker-app'
     sh 'sleep 5'
